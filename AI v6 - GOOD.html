@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Pixie AI Chat — Pixie Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Reset & root variables */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg-primary:#ffffff; --bg-secondary:#f8fafc; --bg-tertiary:#e6eef8;
+  --text-primary:#0f172a; --text-secondary:#64748b;
+  --accent:#3b82f6; --accent-hover:#2563eb;
+  --border:#e6eef8; --shadow:rgba(2,6,23,0.08);
+  --user-msg-bg:#3b82f6; --ai-msg-bg:#f1f5f9;
+  --font-primary: Inter, -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  --transition: all 0.3s ease;
+  --radius: 12px;
+  --success: #10b981;
+  --error: #ef4444;
+  --warning: #f59e0b;
+}
+
+/* Theme definitions (12 themes: 3 rows of 4) */
+[data-theme="light"]{
+  --bg-primary:#ffffff;--bg-secondary:#f8fafc;--bg-tertiary:#e6eef8;
+  --text-primary:#0f172a;--text-secondary:#64748b;
+  --accent:#3b82f6;--accent-hover:#2563eb;--border:#e6eef8;
+  --user-msg-bg:#3b82f6;--ai-msg-bg:#f1f5f9;--font-primary:Inter,system-ui,sans-serif;
+}
+[data-theme="dark"]{
+  --bg-primary:#0b1220;--bg-secondary:#1e293b;--bg-tertiary:#334155;
+  --text-primary:#f1f5f9;--text-secondary:#cbd5e1;
+  --accent:#60a5fa;--accent-hover:#3b82f6;--border:#475569;
+  --user-msg-bg:#60a5fa;--ai-msg-bg:#334155;--font-primary:Inter,system-ui,sans-serif;
+}
+[data-theme="midnight"]{
+  --bg-primary:#05060a;--bg-secondary:#0e1720;--bg-tertiary:#1e293b;
+  --text-primary:#e2e8f0;--text-secondary:#7ee5e5;
+  --accent:#66fcf1;--accent-hover:#45a29e;--border:#0d2730;
+  --user-msg-bg:#66fcf1;--ai-msg-bg:#0e1720;--font-primary:"Courier New",monospace;
+}
+[data-theme="futuristic"]{
+  --bg-primary:#000000;--bg-secondary:#0d0d0d;--bg-tertiary:#1a1a1a;
+  --text-primary:#00ff99;--text-secondary:#00cc88;
+  --accent:#00ff99;--accent-hover:#00cc88;--border:#111111;
+  --user-msg-bg:#00ff99;--ai-msg-bg:#0d0d0d;--font-primary:'Orbitron',sans-serif;
+  text-shadow:0 0 6px #00ff99;
+}
+[data-theme="neon"]{
+  --bg-primary:#05000a;--bg-secondary:#0a0020;--bg-tertiary:#1a003f;
+  --text-primary:#ffffff;--text-secondary:#00ffff;
+  --accent:#ff00ff;--accent-hover:#00ffff;--border:#1a003f;
+  --user-msg-bg:#ff00ff;--ai-msg-bg:#0a0020;--font-primary:'Orbitron',sans-serif;
+  text-shadow:0 0 10px #ff00ff, 0 0 20px #00ffff;
+}
+[data-theme="solarized"]{
+  --bg-primary:#fdf6e3;--bg-secondary:#eee8d5;--bg-tertiary:#93a1a1;
+  --text-primary:#657b83;--text-secondary:#586e75;
+  --accent:#268bd2;--accent-hover:#2aa198;--border:#eee8d5;
+  --user-msg-bg:#268bd2;--ai-msg-bg:#eee8d5;--font-primary:Georgia,serif;
+}
+[data-theme="forest"]{
+  --bg-primary:#e8f5e9;--bg-secondary:#c8e6c9;--bg-tertiary:#a5d6a7;
+  --text-primary:#1b5e20;--text-secondary:#2e7d32;
+  --accent:#4caf50;--accent-hover:#388e3c;--border:#c8e6c9;
+  --user-msg-bg:#4caf50;--ai-msg-bg:#c8e6c9;--font-primary:'Trebuchet MS',sans-serif;
+}
+[data-theme="desert"]{
+  --bg-primary:#fff4e6;--bg-secondary:#ffe8cc;--bg-tertiary:#ffd9b3;
+  --text-primary:#6b4226;--text-secondary:#8c5e3c;
+  --accent:#ff7f50;--accent-hover:#ff5722;--border:#ffe8cc;
+  --user-msg-bg:#ff7f50;--ai-msg-bg:#ffe8cc;--font-primary:Georgia,serif;
+}
+[data-theme="aurora"]{
+  --bg-primary:#081229;--bg-secondary:#0f2138;--bg-tertiary:#123b59;
+  --text-primary:#dff3ff;--text-secondary:#9fd7f3;
+  --accent:#1a9adf;--accent-hover:#1379b6;--border:#0b2a42;
+  --user-msg-bg:#1a9adf;--ai-msg-bg:#0f2138;--font-primary:Verdana, sans-serif;
+}
+[data-theme="pink"]{
+  --bg-primary:#fff6fb;--bg-secondary:#ffeef7;--bg-tertiary:#ffdff2;
+  --text-primary:#3b003a;--text-secondary:#5a2a48;
+  --accent:#ff6aa6;--accent-hover:#ff3b8a;--border:#ffeef7;
+  --user-msg-bg:#ff6aa6;--ai-msg-bg:#ffeef7;--font-primary:Inter, sans-serif;
+}
+[data-theme="highcontrast"]{
+  --bg-primary:#000000;--bg-secondary:#ffffff;--bg-tertiary:#000000;
+  --text-primary:#ffffff;--text-secondary:#000000;
+  --accent:#ffff00;--accent-hover:#ffcc00;--border:#ffffff;
+  --user-msg-bg:#ffff00;--ai-msg-bg:#ffffff;--font-primary:Arial,Helvetica,sans-serif;
+}
+[data-theme="orange"]{
+  --bg-primary:#fffaf6;--bg-secondary:#fff0e6;--bg-tertiary:#ffe6cc;
+  --text-primary:#603813;--text-secondary:#8d5a2f;
+  --accent:#ff8a00;--accent-hover:#ff6a00;--border:#fff0e6;
+  --user-msg-bg:#ff8a00;--ai-msg-bg:#fff0e6;--font-primary:Inter, sans-serif;
+}
+[data-theme="rainbow"]{
+  --bg-primary:#0d0d10;--bg-secondary:#0f0f12;--bg-tertiary:#121214;
+  --text-primary:#ffffff;--text-secondary:#cfcfcf;
+  --accent:#9ca3af;--accent-hover:#6b7280;--border:#151517;
+  --user-msg-bg:#9ca3af;--ai-msg-bg:#0f0f12;--font-primary:'Orbitron',sans-serif;
+}
+
+/* Glow animations for neon & futuristic & rainbow */
+@keyframes futuristicGlow { from { box-shadow: 0 0 6px #00ff99, 0 0 12px #00ff99; } to { box-shadow: 0 0 18px #00ff99, 0 0 36px #00ff99; } }
+@keyframes neonGlow { from { box-shadow: 0 0 6px #ff00ff, 0 0 12px #00ffff } to { box-shadow: 0 0 18px #ff00ff, 0 0 36px #00ffff } }
+/* smooth rainbow cycle for text/glow — long duration for smoothness */
+@keyframes rainbowText {
+  0%{color: #ff0000; text-shadow: 0 0 5px rgba(255,0,0,0.5);}
+  14%{color: #ff7f00; text-shadow: 0 0 5px rgba(255,127,0,0.5);}
+  28%{color: #ffff00; text-shadow: 0 0 5px rgba(255,255,0,0.5);}
+  42%{color: #00ff00; text-shadow: 0 0 5px rgba(0,255,0,0.5);}
+  57%{color: #0000ff; text-shadow: 0 0 5px rgba(0,0,255,0.5);}
+  71%{color: #4b0082; text-shadow: 0 0 5px rgba(75,0,130,0.5);}
+  85%{color: #9400d3; text-shadow: 0 0 5px rgba(148,0,211,0.5);}
+  100%{color: #ff0000; text-shadow: 0 0 5px rgba(255,0,0,0.5);}
+}
+@keyframes rainbowBG {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+/* Layout & base */
+html,body{height:100%; overflow: hidden;}
+body{
+  background:var(--bg-primary);
+  color:var(--text-primary);
+  font-family:var(--font-primary);
+  transition:background 0.25s, color 0.25s;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+.app{flex:1;display:flex;flex-direction:column; height: 100vh;}
+.header{
+  background:var(--bg-secondary);
+  border-bottom:1px solid var(--border);
+  padding:12px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  box-shadow:0 2px 8px var(--shadow);
+  z-index:60;
+  flex-shrink: 0;
+}
+.logo{display:flex;gap:10px;align-items:center;font-weight:700}
+.logo-icon{
+  width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;
+  background:linear-gradient(135deg,var(--accent),var(--accent-hover));
+}
+.controls{display:flex;align-items:center;gap:8px}
+.btn{
+  background:var(--bg-tertiary);
+  border:1px solid var(--border);
+  color:var(--text-primary);
+  padding:8px 12px;border-radius:8px;font-size:14px;cursor:pointer;
+  transition:transform .12s ease, background .12s;
+  font-family:var(--font-primary);
+}
+.btn:hover{transform:translateY(-2px)}
+.clear-btn{color:var(--text-primary)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* main two-column layout: tabs + chat */
+.chat-main{
+  flex:1;display:flex;min-height:0; height: calc(100vh - 60px);
+}
+
+/* Tabs column */
+.tabs-column{
+  width:240px;background:var(--bg-secondary);border-right:1px solid var(--border);display:flex;flex-direction:column;
+  flex-shrink: 0;
+}
+.tabs-top{display:flex;align-items:center;justify-content:space-between;padding:8px;border-bottom:1px solid var(--border)}
+.add-tab-btn{font-weight:600}
+.tabs-list{flex:1;overflow:auto;padding:8px}
+.tab{
+  display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:8px;margin-bottom:6px;background:transparent;border:1px solid transparent;cursor:pointer;
+  transition: var(--transition);
+}
+.tab:hover{background:var(--bg-tertiary)}
+.tab.active{background:linear-gradient(90deg,var(--accent),var(--accent-hover));color:white}
+.tab .name{flex:1;margin-right:8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+.tab .controls{display:flex;gap:6px}
+.tab .rename-input{width:100%;border:1px dashed rgba(0,0,0,0.08);padding:4px 6px;border-radius:4px}
+
+/* chat column */
+.chat-column{flex:1;display:flex;flex-direction:column;min-width:0; height: 100%;}
+.messages{flex:1;overflow:auto;padding:24px;display:flex;flex-direction:column;gap:16px; height: calc(100% - 80px);}
+.message{display:flex;gap:12px;max-width:900px;align-items:flex-start; animation: fadeIn 0.3s ease;}
+.message.ai{align-self:flex-start}
+.message.user{align-self:flex-end;flex-direction:row-reverse}
+.message-avatar{
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:white;flex-shrink:0;overflow:hidden;
+}
+.message-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.message-content{background:var(--ai-msg-bg);padding:12px 14px;border-radius:12px;line-height:1.5;white-space:pre-wrap;max-width:68ch; transition: var(--transition);}
+.message.user .message-content{background:var(--user-msg-bg);color:white}
+
+/* Rainbow theme text effects */
+[data-theme="rainbow"] .message-content,
+[data-theme="rainbow"] .message-avatar,
+[data-theme="rainbow"] .logo,
+[data-theme="rainbow"] .btn:not(.clear-btn),
+[data-theme="rainbow"] .send-btn {
+  animation: rainbowText 10s linear infinite;
+}
+
+/* typing indicator style */
+.typing-indicator{display:flex;align-items:center;gap:8px;font-style:italic;color:var(--text-secondary)}
+.typing-dots{display:flex;gap:6px}
+.typing-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);opacity:.6;animation:typingBounce 1.4s infinite}
+@keyframes typingBounce{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+
+/* input area - fixed at bottom */
+.input-area{
+  padding:12px 18px;border-top:1px solid var(--border);background:var(--bg-secondary);
+  position: sticky; bottom: 0; z-index: 50; flex-shrink: 0;
+}
+.input-container{max-width:100%;margin:0 auto;display:flex;gap:10px;align-items:flex-end; padding: 0 20px;}
+.input-field{
+  flex:1;padding:12px 14px;border-radius:12px;border:1px solid var(--border);min-height:44px;max-height:160px;overflow:auto;
+  background:var(--bg-primary);font-family:var(--font-primary); resize: none;
+  transition: var(--transition);
+  width: 100%;
+}
+.send-btn{padding:10px 14px;border-radius:12px;border:none;cursor:pointer;background:var(--accent);color:white;font-weight:600;font-family:var(--font-primary); transition: var(--transition);}
+.send-btn[disabled]{opacity:.5;cursor:not-allowed}
+
+/* modals */
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:200; animation: fadeIn 0.3s ease;}
+.modal .content{
+  width:clamp(320px,80%,760px);background:var(--bg-secondary);border-radius:12px;padding:18px;border:1px solid var(--border);box-shadow:0 10px 40px rgba(0,0,0,0.25);
+  animation: slideUp 0.3s ease;
+}
+.modal .row{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.modal label{font-size:13px;color:var(--text-secondary)}
+.modal input[type="text"], .modal input[type="password"], .modal select{
+  padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg-primary);font-family:var(--font-primary);
+  transition: var(--transition);
+}
+.theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:6px}
+.theme-button{padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column; transition: var(--transition);}
+.theme-swatch{width:48px;height:32px;border-radius:6px;margin-bottom:6px;box-shadow:0 2px 6px rgba(0,0,0,0.06);}
+
+/* specific theme previews for buttons */
+.theme-button[data-theme="light"] .theme-swatch{background:linear-gradient(180deg,#fff,#e6eef8)}
+.theme-button[data-theme="dark"] .theme-swatch{background:linear-gradient(180deg,#0b1220,#111827)}
+.theme-button[data-theme="midnight"] .theme-swatch{background:linear-gradient(180deg,#071022,#123a42)}
+.theme-button[data-theme="futuristic"] .theme-swatch{background:linear-gradient(90deg,#001100,#003300); box-shadow:0 0 12px #00ff99 inset}
+.theme-button[data-theme="neon"] .theme-swatch{background:linear-gradient(90deg,#2b002b,#001133); box-shadow:0 0 12px #ff00ff inset}
+.theme-button[data-theme="solarized"] .theme-swatch{background:linear-gradient(180deg,#fdf6e3,#eee8d5)}
+.theme-button[data-theme="forest"] .theme-swatch{background:linear-gradient(180deg,#e8f5e9,#c8e6c9)}
+.theme-button[data-theme="desert"] .theme-swatch{background:linear-gradient(180deg,#fff4e6,#ffe8cc)}
+.theme-button[data-theme="aurora"] .theme-swatch{background:linear-gradient(90deg,#0b2a42,#1a759f)}
+.theme-button[data-theme="pink"] .theme-swatch{background:linear-gradient(90deg,#fff6fb,#ffdff2)}
+.theme-button[data-theme="highcontrast"] .theme-swatch{background:linear-gradient(90deg,#000,#fff)}
+.theme-button[data-theme="orange"] .theme-swatch{background:linear-gradient(90deg,#fffaf6,#ff8a00)}
+.theme-button[data-theme="rainbow"] .theme-swatch{
+  background:linear-gradient(90deg,red,orange,yellow,green,blue,indigo,violet);
+  background-size:200% 100%;
+  animation:rainbowBG 6s linear infinite;
+  border-radius:6px;
+}
+
+/* selection ring for theme buttons */
+.theme-button.selected{outline:3px solid rgba(59,130,246,0.18);transform:translateY(-3px)}
+
+/* small avatar preview inside settings */
+.avatar-preview{width:56px;height:56px;border-radius:10px;overflow:hidden;display:inline-block;background:#ddd}
+.avatar-preview img{width:100%;height:100%;object-fit:cover}
+
+/* futuristic/neon glows when applied */
+[data-theme="futuristic"] .message-content,
+[data-theme="futuristic"] .message-avatar,
+[data-theme="futuristic"] .send-btn,
+[data-theme="futuristic"] .btn{animation:futuristicGlow 1.8s infinite alternate}
+[data-theme="neon"] .message-content,
+[data-theme="neon"] .message-avatar,
+[data-theme="neon"] .send-btn,
+[data-theme="neon"] .btn{animation:neonGlow 1.4s infinite alternate}
+
+/* Custom alert system */
+.custom-alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 16px 24px;
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 400px;
+  animation: slideInRight 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
+  border-left: 4px solid var(--accent);
+  transform: translateX(0);
+}
+.custom-alert.success { border-left-color: var(--success); }
+.custom-alert.error { border-left-color: var(--error); }
+.custom-alert.warning { border-left-color: var(--warning); }
+.custom-alert .alert-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.custom-alert .alert-content {
+  flex: 1;
+}
+.custom-alert .alert-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+/* Confirmation dialog */
+.confirm-dialog {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.45);
+  z-index: 300;
+  animation: fadeIn 0.3s ease;
+}
+.confirm-dialog .content {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+  max-width: 400px;
+  width: 90%;
+  animation: slideUp 0.3s ease;
+}
+.confirm-dialog .message {
+  margin-bottom: 20px;
+  color: var(--text-primary);
+}
+.confirm-dialog .buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+.confirm-dialog .btn {
+  padding: 8px 16px;
+}
+
+/* Login/Register forms */
+.auth-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.auth-tab {
+  padding: 10px 16px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: var(--transition);
+}
+.auth-tab.active {
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+}
+.auth-form {
+  display: none;
+}
+.auth-form.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+.api-key-check {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.api-key-check .btn {
+  white-space: nowrap;
+}
+
+/* Splash screen */
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease;
+}
+.splash-content {
+  text-align: center;
+  animation: pulse 1.5s infinite;
+}
+.splash-logo {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; visibility: hidden; }
+}
+@keyframes pulse {
+  0% { transform: scale(0.95); opacity: 0.7; }
+  50% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.7; }
+}
+
+/* responsive */
+@media (max-width:900px){
+  .tabs-column{width:140px}
+  .theme-grid{grid-template-columns:repeat(3,1fr)}
+  .theme-button .theme-swatch{width:40px;height:24px}
+}
+</style>
+</head>
+<body data-theme="light">
+<!-- Splash Screen -->
+<div class="splash-screen" id="splashScreen">
+  <div class="splash-content">
+    <div class="splash-logo">🤖</div>
+    <h2>Pixie AI</h2>
+    <p>Loading your AI assistant...</p>
+  </div>
+</div>
+
+<!-- Confirmation Dialog -->
+<div class="confirm-dialog" id="confirmDialog">
+  <div class="content">
+    <div class="message" id="confirmMessage">Are you sure?</div>
+    <div class="buttons">
+      <button class="btn" id="confirmCancel">Cancel</button>
+      <button class="btn" id="confirmOk">OK</button>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- header -->
+  <header class="header">
+    <div class="logo"><div class="logo-icon">AI</div><div>Pixie Assistant</div></div>
+    <div class="controls">
+      <button class="btn add-tab-btn" id="quickNewTab">+ New</button>
+      <button class="btn clear-btn" id="clearBtn">Clear</button>
+      <button class="btn" id="settingsBtn">Settings</button>
+      <button class="btn" id="signOutBtn">Sign Out</button>
+    </div>
+  </header>
+
+  <!-- main content -->
+  <div class="chat-main">
+    <!-- left tabs -->
+    <div class="tabs-column">
+      <div class="tabs-top" style="padding:10px 12px;align-items:center;">
+        <strong style="font-size:14px">Conversations</strong>
+      </div>
+      <div class="tabs-list" id="tabsList"></div>
+    </div>
+
+    <!-- chat -->
+    <div class="chat-column">
+      <div class="messages" id="messages">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-state-icon">🤖</div>
+          <h2>Welcome to PixieAI Chat</h2>
+          <p>Sign in to start — enter your username & password.</p>
+        </div>
+      </div>
+
+      <div class="input-area">
+        <div class="input-container">
+          <div style="flex:1;">
+            <textarea class="input-field" id="messageInput" placeholder="Type your message here..." rows="1"></textarea>
+          </div>
+          <div>
+            <button class="send-btn" id="sendBtn">Send →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH modal (shown on entry until valid credentials present) -->
+<div class="modal" id="authModal">
+  <div class="content" id="authContent" role="dialog" aria-modal="true">
+    <h3>Welcome to PixieAI</h3>
+    
+    <div class="auth-tabs">
+      <div class="auth-tab active" data-tab="login">Login</div>
+      <div class="auth-tab" data-tab="register">Register</div>
+    </div>
+    
+    <!-- Login Form -->
+    <div class="auth-form active" id="loginForm">
+      <div class="row">
+        <label>Username</label>
+        <input id="loginUsername" type="text" placeholder="Your username">
+      </div>
+      <div class="row">
+        <label>Password</label>
+        <input id="loginPassword" type="password" placeholder="Your password">
+      </div>
+      <div class="row" style="display:flex;gap:8px;align-items:center">
+        <button class="btn" id="loginSubmit">Login</button>
+        <div id="loginStatus" style="color:#c11;font-size:13px"></div>
+      </div>
+    </div>
+    
+    <!-- Register Form -->
+    <div class="auth-form" id="registerForm">
+      <div class="row">
+        <label>Username</label>
+        <input id="registerUsername" type="text" placeholder="Choose a username">
+      </div>
+      <div class="row">
+        <label>Password</label>
+        <input id="registerPassword" type="password" placeholder="Create a password">
+      </div>
+      <div class="row">
+        <label>API Key</label>
+        <div class="api-key-check">
+          <input id="registerApiKey" type="password" placeholder="Your API key" style="flex:1">
+          <button class="btn" id="checkApiKey">Check</button>
+        </div>
+      </div>
+      <div class="row" style="display:flex;gap:8px;align-items:center">
+        <button class="btn" id="registerSubmit" disabled>Create Account</button>
+        <div id="registerStatus" style="color:#c11;font-size:13px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS modal -->
+<div class="modal" id="settingsModal">
+  <div class="content">
+    <h3>Settings</h3>
+
+    <div class="row">
+      <label>Change Username</label>
+      <input id="settingsUsername" type="text" placeholder="Display name">
+    </div>
+
+    <div class="row">
+      <label>Upload Avatar (PNG/JPG)</label>
+      <div style="display:flex;gap:10px;align-items:center">
+        <div class="avatar-preview" id="avatarPreview"><img id="avatarPreviewImg" src="" alt="" style="display:none"></div>
+        <input id="avatarUpload" type="file" accept="image/*">
+      </div>
+    </div>
+
+    <div class="row">
+      <label>Choose Theme (preview only — apply on Save)</label>
+      <div class="theme-grid" id="themeGrid">
+        <button class="theme-button" data-theme="light"><span class="theme-swatch"></span><small>Light</small></button>
+        <button class="theme-button" data-theme="dark"><span class="theme-swatch"></span><small>Dark</small></button>
+        <button class="theme-button" data-theme="midnight"><span class="theme-swatch"></span><small>Midnight</small></button>
+        <button class="theme-button" data-theme="futuristic"><span class="theme-swatch"></span><small>Futuristic</small></button>
+
+        <button class="theme-button" data-theme="neon"><span class="theme-swatch"></span><small>Neon</small></button>
+        <button class="theme-button" data-theme="solarized"><span class="theme-swatch"></span><small>Solarized</small></button>
+        <button class="theme-button" data-theme="forest"><span class="theme-swatch"></span><small>Forest</small></button>
+        <button class="theme-button" data-theme="desert"><span class="theme-swatch"></span><small>Desert</small></button>
+
+        <button class="theme-button" data-theme="aurora"><span class="theme-swatch"></span><small>Aurora</small></button>
+        <button class="theme-button" data-theme="pink"><span class="theme-swatch"></span><small>Pink</small></button>
+        <button class="theme-button" data-theme="highcontrast"><span class="theme-swatch"></span><small>High Contrast</small></button>
+        <button class="theme-button" data-theme="rainbow"><span class="theme-swatch"></span><small>Rainbow</small></button>
+      </div>
+    </div>
+
+    <div class="row">
+      <label>Flash Version</label>
+      <select id="flashSelect">
+        <option value="1.5">Gemini Flash 1.5</option>
+        <option value="2.0">Gemini Flash 2.0</option>
+      </select>
+    </div>
+
+    <div class="row" style="display:flex;align-items:center;gap:12px;">
+      <label style="margin-right:8px">Show response instantly</label>
+      <input type="checkbox" id="instantToggle">
+      <small style="color:var(--text-secondary)">If enabled, shows full response immediately instead of streaming.</small>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+      <button class="btn" id="cancelSettings">Cancel</button>
+      <button class="btn" id="saveSettings">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ====== App State & Storage Keys ====== */
+const STORAGE_KEYS = {
+  API_KEY: 'pixie_api_key',
+  USERNAME: 'pixie_username',
+  PASSWORD: 'pixie_password',
+  AVATAR: 'pixie_avatar', // dataURL
+  THEME: 'pixie_theme',
+  FLASH: 'pixie_flash',
+  INSTANT: 'pixie_instant',
+  TABS: 'pixie_tabs_v1',
+  USERS: 'pixie_users' // Store registered users
+};
+
+let state = {
+  apiKey: localStorage.getItem(STORAGE_KEYS.API_KEY) || '',
+  username: localStorage.getItem(STORAGE_KEYS.USERNAME) || '',
+  avatarDataUrl: localStorage.getItem(STORAGE_KEYS.AVATAR) || '',
+  themePending: localStorage.getItem(STORAGE_KEYS.THEME) || 'light',
+  themeApplied: localStorage.getItem(STORAGE_KEYS.THEME) || 'light',
+  flash: localStorage.getItem(STORAGE_KEYS.FLASH) || '1.5',
+  instant: localStorage.getItem(STORAGE_KEYS.INSTANT) === 'true',
+  tabs: JSON.parse(localStorage.getItem(STORAGE_KEYS.TABS) || '[]'),
+  activeTabIndex: 0,
+  isTyping:false,
+  users: JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '{}')
+};
+
+/* ====== Elements ====== */
+const splashScreen = document.getElementById('splashScreen');
+const authModal = document.getElementById('authModal');
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+const loginUsername = document.getElementById('loginUsername');
+const loginPassword = document.getElementById('loginPassword');
+const loginSubmit = document.getElementById('loginSubmit');
+const loginStatus = document.getElementById('loginStatus');
+const registerUsername = document.getElementById('registerUsername');
+const registerPassword = document.getElementById('registerPassword');
+const registerApiKey = document.getElementById('registerApiKey');
+const checkApiKey = document.getElementById('checkApiKey');
+const registerSubmit = document.getElementById('registerSubmit');
+const registerStatus = document.getElementById('registerStatus');
+const authTabs = document.querySelectorAll('.auth-tab');
+
+const confirmDialog = document.getElementById('confirmDialog');
+const confirmMessage = document.getElementById('confirmMessage');
+const confirmCancel = document.getElementById('confirmCancel');
+const confirmOk = document.getElementById('confirmOk');
+
+const settingsModal = document.getElementById('settingsModal');
+const settingsBtn = document.getElementById('settingsBtn');
+const saveSettingsBtn = document.getElementById('saveSettings');
+const cancelSettingsBtn = document.getElementById('cancelSettings');
+const settingsUsername = document.getElementById('settingsUsername');
+const avatarUpload = document.getElementById('avatarUpload');
+const avatarPreviewImg = document.getElementById('avatarPreviewImg');
+const avatarPreviewWrap = document.getElementById('avatarPreview');
+const themeGrid = document.getElementById('themeGrid');
+const flashSelect = document.getElementById('flashSelect');
+const instantToggle = document.getElementById('instantToggle');
+
+const messagesEl = document.getElementById('messages');
+const messageInput = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
+const clearBtn = document.getElementById('clearBtn');
+const signOutBtn = document.getElementById('signOutBtn');
+
+const tabsList = document.getElementById('tabsList');
+const quickNewTab = document.getElementById('quickNewTab');
+
+/* ====== Utility & UI helpers ====== */
+function showAlert(message, type = 'info') {
+  // Remove any existing alerts first
+  const existingAlerts = document.querySelectorAll('.custom-alert');
+  existingAlerts.forEach(alert => alert.remove());
+  
+  const alert = document.createElement('div');
+  alert.className = `custom-alert ${type}`;
+  
+  let icon = 'ℹ️';
+  if (type === 'success') icon = '✅';
+  if (type === 'error') icon = '❌';
+  if (type === 'warning') icon = '⚠️';
+  
+  alert.innerHTML = `
+    <span class="alert-icon">${icon}</span>
+    <div class="alert-content">${message}</div>
+    <button class="alert-close">&times;</button>
+  `;
+  
+  document.body.appendChild(alert);
+  
+  // Add close functionality
+  alert.querySelector('.alert-close').addEventListener('click', () => {
+    alert.style.animation = 'fadeOut 0.5s ease forwards';
+    setTimeout(() => alert.remove(), 500);
+  });
+  
+  // Auto remove after 3 seconds
+  setTimeout(() => {
+    if (alert.parentNode) {
+      alert.style.animation = 'fadeOut 0.5s ease forwards';
+      setTimeout(() => alert.remove(), 500);
+    }
+  }, 3000);
+}
+
+function showConfirm(message) {
+  return new Promise((resolve) => {
+    confirmMessage.textContent = message;
+    confirmDialog.style.display = 'flex';
+    
+    const cleanUp = () => {
+      confirmDialog.style.display = 'none';
+      confirmCancel.removeEventListener('click', onCancel);
+      confirmOk.removeEventListener('click', onOk);
+    };
+    
+    const onCancel = () => {
+      cleanUp();
+      resolve(false);
+    };
+    
+    const onOk = () => {
+      cleanUp();
+      resolve(true);
+    };
+    
+    confirmCancel.addEventListener('click', onCancel);
+    confirmOk.addEventListener('click', onOk);
+  });
+}
+
+function saveStateToStorage(){
+  localStorage.setItem(STORAGE_KEYS.API_KEY, state.apiKey || '');
+  localStorage.setItem(STORAGE_KEYS.USERNAME, state.username || '');
+  localStorage.setItem(STORAGE_KEYS.PASSWORD, state.password || '');
+  localStorage.setItem(STORAGE_KEYS.AVATAR, state.avatarDataUrl || '');
+  localStorage.setItem(STORAGE_KEYS.THEME, state.themeApplied || 'light');
+  localStorage.setItem(STORAGE_KEYS.FLASH, state.flash || '1.5');
+  localStorage.setItem(STORAGE_KEYS.INSTANT, state.instant ? 'true' : 'false');
+  localStorage.setItem(STORAGE_KEYS.TABS, JSON.stringify(state.tabs || []));
+  localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(state.users || {}));
+}
+
+/* Create default tab if none */
+function ensureTabs(){
+  if(!Array.isArray(state.tabs) || state.tabs.length === 0){
+    state.tabs = [{ id: Date.now(), name: 'Chat 1', messages: [] }];
+    state.activeTabIndex = 0;
+    saveStateToStorage();
+  }
+}
+
+/* Format incoming/ outgoing messages (markdown-lite + headings) */
+function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function formatMessage(text){
+  if(!text) return '';
+  // escape first
+  let out = escapeHtml(text);
+  // code spans
+  out = out.replace(/`([^`]+)`/g, '<code style="background:var(--bg-tertiary);padding:0.1em .4em;border-radius:4px;font-family:monospace;">$1</code>');
+  // bold
+  out = out.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // italic
+  out = out.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  // color tags [color=#rrggbb]text[/color]
+  out = out.replace(/\[color=(#[0-9a-fA-F]{6})\](.*?)\[\/color\]/g, '<span style="color:$1">$2</span>');
+  // headings — support 1..6 at line start
+  out = out.replace(/^######\s*(.+)$/gm, '<h6>$1</h6>');
+  out = out.replace(/^#####\s*(.+)$/gm, '<h5>$1</h5>');
+  out = out.replace(/^####\s*(.+)$/gm, '<h4>$1</h4>');
+  out = out.replace(/^###\s*(.+)$/gm, '<h3>$1</h3>');
+  out = out.replace(/^##\s*(.+)$/gm, '<h2>$1</h2>');
+  out = out.replace(/^#\s*(.+)$/gm, '<h1>$1</h1>');
+  // newlines to <br>
+  out = out.replace(/\n/g, '<br>');
+  return out;
+}
+
+/* ====== Render functions ====== */
+function renderTabs(){
+  tabsList.innerHTML = '';
+  state.tabs.forEach((tab, idx) => {
+    const tabEl = document.createElement('div');
+    tabEl.className = 'tab' + (idx === state.activeTabIndex ? ' active' : '');
+    const nameWrap = document.createElement('div');
+    nameWrap.className = 'name';
+    nameWrap.textContent = tab.name;
+    nameWrap.title = 'Double-click to rename';
+    nameWrap.addEventListener('dblclick', (e)=>{
+      // inline rename
+      const input = document.createElement('input');
+      input.className = 'rename-input';
+      input.value = tab.name;
+      nameWrap.innerHTML = '';
+      nameWrap.appendChild(input);
+      input.focus();
+      input.select();
+      input.addEventListener('blur', ()=>{ finalizeRename(input.value.trim() || tab.name, idx); });
+      input.addEventListener('keydown', (ev)=>{ if(ev.key === 'Enter'){ finalizeRename(input.value.trim() || tab.name, idx); } });
+    });
+    tabEl.appendChild(nameWrap);
+
+    const controls = document.createElement('div'); controls.className = 'controls';
+    const del = document.createElement('button'); del.className='btn'; del.style.padding='4px 8px'; del.textContent='✕';
+    del.title = 'Delete conversation';
+    del.addEventListener('click',(ev)=>{ev.stopPropagation(); showConfirm('Delete this conversation?').then(confirmed => {
+      if(confirmed){ state.tabs.splice(idx,1); if(state.activeTabIndex >= state.tabs.length) state.activeTabIndex = Math.max(0, state.tabs.length-1); saveStateToStorage(); renderTabs(); renderMessages(); showAlert('Conversation deleted', 'success'); }
+    });});
+    controls.appendChild(del);
+    tabEl.appendChild(controls);
+
+    tabEl.addEventListener('click', ()=>{
+      state.activeTabIndex = idx;
+      renderTabs();
+      renderMessages();
+    });
+
+    tabsList.appendChild(tabEl);
+  });
+}
+
+function finalizeRename(newName, idx){
+  state.tabs[idx].name = newName;
+  saveStateToStorage();
+  renderTabs();
+  showAlert('Conversation renamed', 'success');
+}
+
+function renderMessages(){
+  messagesEl.innerHTML = '';
+  ensureTabs();
+  const currentTab = state.tabs[state.activeTabIndex];
+  if(!currentTab || !currentTab.messages || currentTab.messages.length === 0){
+    messagesEl.innerHTML = `
+      <div class="empty-state" id="emptyState">
+        <div class="empty-state-icon">🤖</div>
+        <h2>New Chat</h2>
+        <p>Start typing below to ask PixieAI something.</p>
+      </div>`;
+    return;
+  }
+  currentTab.messages.forEach(msg=>{
+    const m = document.createElement('div');
+    m.className = 'message ' + (msg.type === 'user' ? 'user' : 'ai');
+    const avatar = document.createElement('div'); avatar.className='message-avatar';
+    if(msg.type === 'user'){
+      if(state.avatarDataUrl){ const img = document.createElement('img'); img.src = state.avatarDataUrl; avatar.appendChild(img); }
+      else { avatar.textContent = (state.username||'U')[0]?.toUpperCase() || 'U'; }
+    } else {
+      // AI avatar
+      avatar.textContent = 'AI';
+    }
+    const content = document.createElement('div'); content.className = 'message-content';
+    // if special typing placeholder:
+    if(msg.type === 'typing'){
+      content.innerHTML = `<div class="typing-indicator"><span>PixieAI is thinking</span><div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
+    } else {
+      content.innerHTML = formatMessage(msg.text || '');
+    }
+    m.appendChild(avatar); m.appendChild(content);
+    messagesEl.appendChild(m);
+  });
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+/* ====== New Tab / Add / Rename / Delete helpers ====== */
+function newTab(name){
+  const n = name || `Chat ${state.tabs.length+1}`;
+  state.tabs.push({ id: Date.now(), name: n, messages: [] });
+  state.activeTabIndex = state.tabs.length - 1;
+  saveStateToStorage();
+  renderTabs();
+  renderMessages();
+  showAlert('New chat created', 'success');
+}
+
+/* ====== Auth flow (validate api key with a tiny test request) ====== */
+/* Using the same request shape you had previously for Gemini.
+   Model is chosen based on state.flash (gemini-1.5-flash or gemini-2.0-flash).
+*/
+async function validateApiKey(keyValue){
+  try {
+    const modelName = state.flash === '2.0' ? 'gemini-2.0-flash' : 'gemini-1.5-flash';
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(keyValue)}`;
+    const body = {
+      contents: [{ role: 'user', parts: [{ text: 'Hello' }] }],
+      generationConfig: { temperature: 0.0, maxOutputTokens: 1 }
+    };
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    return res.ok;
+  } catch(err){
+    return false;
+  }
+}
+
+async function validateApiKeyAndSignIn(usernameValue, passwordValue){
+  loginStatus.textContent = '';
+  loginSubmit.disabled = true;
+  loginStatus.textContent = 'Validating...';
+  
+  // Check if user exists and password matches
+  if (!state.users[usernameValue] || state.users[usernameValue].password !== passwordValue) {
+    loginStatus.textContent = 'Invalid username or password';
+    loginSubmit.disabled = false;
+    return false;
+  }
+  
+  // Get API key from stored users
+  const apiKey = state.users[usernameValue].apiKey;
+  
+  try {
+    const isValid = await validateApiKey(apiKey);
+    if(!isValid){
+      loginStatus.textContent = 'API key is no longer valid';
+      loginSubmit.disabled = false;
+      return false;
+    }
+    // success
+    state.username = usernameValue;
+    state.apiKey = apiKey;
+    state.password = passwordValue;
+    // save
+    localStorage.setItem(STORAGE_KEYS.API_KEY, state.apiKey);
+    localStorage.setItem(STORAGE_KEYS.USERNAME, state.username);
+    localStorage.setItem(STORAGE_KEYS.PASSWORD, state.password);
+    // if avatar exists in storage keep it; otherwise none
+    authModal.style.display = 'none';
+    loginStatus.textContent = '';
+    loginSubmit.disabled = false;
+    showAlert(`Signed in as ${state.username}`, 'success');
+    // ensure at least one tab
+    ensureTabs();
+    renderTabs(); renderMessages();
+    return true;
+  } catch(err){
+    loginStatus.textContent = 'Validation request failed';
+    loginSubmit.disabled = false;
+    return false;
+  }
+}
+
+async function registerUser(usernameValue, passwordValue, apiKeyValue){
+  registerStatus.textContent = '';
+  registerSubmit.disabled = true;
+  registerStatus.textContent = 'Validating...';
+  
+  if (state.users[usernameValue]) {
+    registerStatus.textContent = 'Username already exists';
+    registerSubmit.disabled = false;
+    return false;
+  }
+  
+  try {
+    const isValid = await validateApiKey(apiKeyValue);
+    if(!isValid){
+      registerStatus.textContent = 'Invalid API key';
+      registerSubmit.disabled = false;
+      return false;
+    }
+    // success - register user
+    state.users[usernameValue] = {
+      password: passwordValue,
+      apiKey: apiKeyValue,
+      createdAt: new Date().toISOString()
+    };
+    
+    // Auto login after registration
+    state.username = usernameValue;
+    state.apiKey = apiKeyValue;
+    state.password = passwordValue;
+    
+    // save
+    localStorage.setItem(STORAGE_KEYS.API_KEY, state.apiKey);
+    localStorage.setItem(STORAGE_KEYS.USERNAME, state.username);
+    localStorage.setItem(STORAGE_KEYS.PASSWORD, state.password);
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(state.users));
+    
+    authModal.style.display = 'none';
+    registerStatus.textContent = '';
+    registerSubmit.disabled = false;
+    showAlert(`Account created and signed in as ${state.username}`, 'success');
+    // ensure at least one tab
+    ensureTabs();
+    renderTabs(); renderMessages();
+    return true;
+  } catch(err){
+    registerStatus.textContent = 'Registration failed';
+    registerSubmit.disabled = false;
+    return false;
+  }
+}
+
+/* ====== Sending message: builds recentMessages from current tab only ====== */
+function formatMessagesForAPI(){
+  const current = state.tabs[state.activeTabIndex];
+  if(!current) return [{ role:'user', parts:[{ text: '' }] }];
+  const recent = current.messages.slice(-10).map(m => {
+    return { role: m.type === 'user' ? 'user' : 'assistant', parts: [{ text: m.text }] };
+  });
+  return recent;
+}
+
+async function sendMessage(){
+  if(state.isTyping) return;
+  const content = messageInput.value.trim();
+  if(!content) return;
+  if(!state.apiKey || !state.username){ showAlert('Please sign in with valid credentials.', 'error'); return; }
+
+  // Append user message locally
+  const current = state.tabs[state.activeTabIndex];
+  current.messages.push({ type: 'user', text: content });
+  saveStateToStorage();
+  renderMessages();
+  messageInput.value = ''; messageInput.style.height='auto';
+
+  // Add typing placeholder message
+  current.messages.push({ type: 'typing', text: '' });
+  renderMessages();
+  state.isTyping = true;
+  sendBtn.disabled = true;
+
+  // Build request
+  const recentMessages = formatMessagesForAPI();
+  // Append the user's new instruction as last item explicitly (ensures latest)
+  recentMessages.push({ role: 'user', parts: [{ text: content }] });
+
+  const modelName = state.flash === '2.0' ? 'gemini-2.0-flash' : 'gemini-1.5-flash';
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(state.apiKey)}`;
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        contents: recentMessages,
+        generationConfig: { temperature: 0.7, maxOutputTokens: 1500 },
+        safetySettings: [{ category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" }]
+      })
+    });
+
+    // remove typing placeholder
+    const idxTyping = current.messages.findIndex(m => m.type === 'typing');
+    if(idxTyping !== -1) current.messages.splice(idxTyping, 1);
+
+    if(!response.ok){
+      // connection failed or invalid key
+      current.messages.push({ type: 'ai', text: 'Connection failed.' });
+      saveStateToStorage();
+      renderMessages();
+      state.isTyping = false;
+      sendBtn.disabled = false;
+      return;
+    }
+    const data = await response.json();
+    const responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response';
+    // Add full AI message
+    if(state.instant){
+      current.messages.push({ type: 'ai', text: responseText });
+      saveStateToStorage();
+      renderMessages();
+    } else {
+      // stream by revealing characters progressively
+      let displayed = '';
+      current.messages.push({ type: 'ai', text: '' });
+      saveStateToStorage();
+      renderMessages();
+      // find the last ai message element
+      const aiMsgIndex = current.messages.length - 1;
+      let charIndex = 0;
+      const interval = setInterval(()=> {
+        charIndex++;
+        current.messages[aiMsgIndex].text = responseText.slice(0,charIndex);
+        renderMessages();
+        if(charIndex >= responseText.length){
+          clearInterval(interval);
+          saveStateToStorage();
+        }
+      }, 12); // small delay for streaming feel
+    }
+  } catch(err){
+    // remove typing placeholder
+    const idx = current.messages.findIndex(m => m.type === 'typing');
+    if(idx !== -1) current.messages.splice(idx,1);
+    current.messages.push({ type: 'ai', text: 'Connection failed.' });
+    saveStateToStorage();
+    renderMessages();
+  } finally {
+    state.isTyping = false;
+    sendBtn.disabled = false;
+  }
+}
+
+/* ====== Settings interactions ====== */
+function openSettings(){
+  // populate fields with pending values
+  settingsUsername.value = state.username || '';
+  flashSelect.value = state.flash || '1.5';
+  instantToggle.checked = !!state.instant;
+  // set preview selection to current applied theme (but keep pending separate)
+  // mark selected button
+  themeGrid.querySelectorAll('.theme-button').forEach(b => {
+    b.classList.toggle('selected', b.dataset.theme === state.themeApplied);
+  });
+  // avatar preview
+  if(state.avatarDataUrl){
+    avatarPreviewImg.src = state.avatarDataUrl; avatarPreviewImg.style.display='block';
+  } else { avatarPreviewImg.style.display='none'; }
+  settingsModal.style.display = 'flex';
+}
+function closeSettings(){
+  settingsModal.style.display = 'none';
+}
+function saveSettings(){
+  // username
+  const newUsername = settingsUsername.value.trim();
+  if(newUsername) state.username = newUsername;
+  // avatarDataUrl already set on upload handler (if any)
+  // theme: find selected themeButton
+  const sel = themeGrid.querySelector('.theme-button.selected');
+  if(sel) state.themePending = sel.dataset.theme;
+  // flash
+  state.flash = flashSelect.value;
+  // instant
+  state.instant = !!instantToggle.checked;
+  // Apply theme now
+  state.themeApplied = state.themePending || state.themeApplied;
+  document.body.setAttribute('data-theme', state.themeApplied);
+  // persist
+  saveStateToStorage();
+  settingsModal.style.display = 'none';
+  showAlert('Settings saved', 'success');
+}
+
+/* ====== Avatar upload preview and store ====== */
+avatarUpload.addEventListener('change', (e)=>{
+  const file = e.target.files?.[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const dataUrl = ev.target.result;
+    state.avatarDataUrl = dataUrl;
+    avatarPreviewImg.src = dataUrl; avatarPreviewImg.style.display = 'block';
+    // also update stored immediately so the preview appears in existing messages
+    localStorage.setItem(STORAGE_KEYS.AVATAR, dataUrl);
+    renderMessages();
+    showAlert('Avatar updated', 'success');
+  };
+  reader.readAsDataURL(file);
+});
+
+/* ====== Theme grid preview click (select but do not apply until Save) ====== */
+themeGrid.querySelectorAll('.theme-button').forEach(btn=>{
+  // clicking selects the theme for pending change
+  btn.addEventListener('click', ()=>{
+    themeGrid.querySelectorAll('.theme-button').forEach(b=>b.classList.remove('selected'));
+    btn.classList.add('selected');
+  });
+});
+
+/* Clicking outside settings closes it */
+settingsModal.addEventListener('click', (e)=>{
+  if(e.target === settingsModal) closeSettings();
+});
+
+/* ====== Quick actions: new tab, clear, sign out ====== */
+quickNewTab.addEventListener('click', ()=> newTab());
+clearBtn.addEventListener('click', ()=>{
+  showConfirm('Clear current conversation?').then(confirmed => {
+    if(confirmed){ 
+      const cur = state.tabs[state.activeTabIndex];
+      if(cur){ cur.messages = []; saveStateToStorage(); renderMessages(); showAlert('Conversation cleared', 'success'); }
+    }
+  });
+});
+signOutBtn.addEventListener('click', ()=>{
+  showConfirm('Sign out? This will clear your session.').then(confirmed => {
+    if(confirmed){ 
+      // clear credentials
+      state.apiKey = ''; state.username = ''; state.avatarDataUrl = ''; state.password = '';
+      localStorage.removeItem(STORAGE_KEYS.API_KEY);
+      localStorage.removeItem(STORAGE_KEYS.USERNAME);
+      localStorage.removeItem(STORAGE_KEYS.AVATAR);
+      localStorage.removeItem(STORAGE_KEYS.PASSWORD);
+      authModal.style.display = 'flex';
+      loginStatus.textContent = '';
+      registerStatus.textContent = '';
+      loginUsername.value = '';
+      loginPassword.value = '';
+      showAlert('Signed out', 'success');
+    }
+  });
+});
+
+/* ====== Auth tab switching ====== */
+authTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    const tabName = tab.getAttribute('data-tab');
+    
+    // Update active tab
+    authTabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    
+    // Show corresponding form
+    document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
+    document.getElementById(`${tabName}Form`).classList.add('active');
+  });
+});
+
+/* ====== API Key validation for registration ====== */
+checkApiKey.addEventListener('click', async () => {
+  const apiKey = registerApiKey.value.trim();
+  if (!apiKey) {
+    showAlert('Please enter an API key', 'error');
+    return;
+  }
+  
+  checkApiKey.disabled = true;
+  checkApiKey.textContent = 'Checking...';
+  
+  const isValid = await validateApiKey(apiKey);
+  
+  if (isValid) {
+    showAlert('API key is valid!', 'success');
+    registerSubmit.disabled = false;
+  } else {
+    showAlert('API key is invalid', 'error');
+    registerSubmit.disabled = true;
+  }
+  
+  checkApiKey.disabled = false;
+  checkApiKey.textContent = 'Check';
+});
+
+/* ====== Auth submit handlers ====== */
+loginSubmit.addEventListener('click', async ()=>{
+  const user = loginUsername.value.trim();
+  const password = loginPassword.value.trim();
+  if(!user || !password){ showAlert('Username and password required', 'error'); return; }
+  // attempt validation
+  loginStatus.textContent = 'Validating...';
+  loginSubmit.disabled = true;
+  const ok = await validateApiKeyAndSignIn(user, password);
+  if(!ok) {
+    loginSubmit.disabled = false;
+  }
+});
+
+registerSubmit.addEventListener('click', async ()=>{
+  const user = registerUsername.value.trim();
+  const password = registerPassword.value.trim();
+  const apiKey = registerApiKey.value.trim();
+  if(!user || !password || !apiKey){ showAlert('All fields are required', 'error'); return; }
+  // attempt registration
+  registerStatus.textContent = 'Registering...';
+  registerSubmit.disabled = true;
+  const ok = await registerUser(user, password, apiKey);
+  if(!ok) {
+    registerSubmit.disabled = false;
+  }
+});
+
+/* ====== Settings open/save/cancel handlers ====== */
+settingsBtn.addEventListener('click', openSettings);
+cancelSettingsBtn.addEventListener('click', ()=>{
+  // revert any preview selection inside modal (do not apply)
+  themeGrid.querySelectorAll('.theme-button').forEach(b => b.classList.toggle('selected', b.dataset.theme === state.themeApplied));
+  closeSettings();
+});
+saveSettingsBtn.addEventListener('click', saveSettings);
+
+/* ====== Send message handlers ====== */
+sendBtn.addEventListener('click', sendMessage);
+messageInput.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMessage(); }
+});
+messageInput.addEventListener('input', ()=> {
+  messageInput.style.height = 'auto';
+  messageInput.style.height = Math.min(messageInput.scrollHeight, 160) + 'px';
+});
+
+/* ====== Init: load saved state, ensure tabs, render ====== */
+function initialize(){
+  // Hide splash screen after a brief delay
+  setTimeout(() => {
+    splashScreen.style.opacity = '0';
+    setTimeout(() => {
+      splashScreen.style.display = 'none';
+    }, 500);
+  }, 1500);
+  
+  // load persisted things
+  state.apiKey = localStorage.getItem(STORAGE_KEYS.API_KEY) || state.apiKey;
+  state.username = localStorage.getItem(STORAGE_KEYS.USERNAME) || state.username;
+  state.password = localStorage.getItem(STORAGE_KEYS.PASSWORD) || '';
+  state.avatarDataUrl = localStorage.getItem(STORAGE_KEYS.AVATAR) || state.avatarDataUrl;
+  state.themeApplied = localStorage.getItem(STORAGE_KEYS.THEME) || state.themeApplied;
+  state.flash = localStorage.getItem(STORAGE_KEYS.FLASH) || state.flash;
+  state.instant = localStorage.getItem(STORAGE_KEYS.INSTANT) === 'true' ? true : state.instant;
+  try { state.tabs = JSON.parse(localStorage.getItem(STORAGE_KEYS.TABS)) || state.tabs; } catch(e) { state.tabs = state.tabs || []; }
+  try { state.users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS)) || state.users; } catch(e) { state.users = state.users || {}; }
+
+  // apply theme if present
+  document.body.setAttribute('data-theme', state.themeApplied || 'light');
+
+  // fill avatar preview
+  if(state.avatarDataUrl){
+    avatarPreviewImg.src = state.avatarDataUrl; avatarPreviewImg.style.display = 'block';
+  } else { avatarPreviewImg.style.display = 'none' }
+
+  // set settings UI defaults
+  flashSelect.value = state.flash || '1.5';
+  instantToggle.checked = !!state.instant;
+
+  // ensure tabs exist
+  ensureTabs();
+  renderTabs();
+  renderMessages();
+
+  // If user not signed in (no apiKey or username) show auth modal (block app)
+  if(!state.apiKey || !state.username){
+    authModal.style.display = 'flex';
+  } else {
+    authModal.style.display = 'none';
+  }
+}
+initialize();
+
+/* ====== Extra: click outside settings closes it (already added).
+   Also clicking outside any modal except auth closes settings/modal — auth must be validated.
+*/
+window.addEventListener('click', (e)=>{
+  const s = settingsModal;
+  if(s.style.display === 'flex' && e.target === s) closeSettings();
+});
+
+/* ====== Accessibility niceties: keyboard ESC closes settings modal ====== */
+window.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){
+    if(settingsModal.style.display === 'flex') closeSettings();
+  }
+});
+</script>
+</body>
+</html>
